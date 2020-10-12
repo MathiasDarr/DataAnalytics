@@ -1,0 +1,1 @@
+mongo admin -u root -p rootpassword

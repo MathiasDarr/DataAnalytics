@@ -1,0 +1,1 @@
+sudo docker-compose -f data_utils/cassandra-compose.yml  up --build

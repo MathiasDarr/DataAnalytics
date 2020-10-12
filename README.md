@@ -1,12 +1,13 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This repository contains various projects & code pipelines that make use of libraries such as Spark & Airflow for 
+data engineering tasks
 
 ### What is this repository for? ###
 
 * Quick summary
 * Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+
 
 ### How do I get set up? ###
 
@@ -16,12 +17,6 @@ This README would normally document whatever steps are necessary to get your app
 * Database configuration
 * How to run tests
 * Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
 
 ### Who do I talk to? ###
 

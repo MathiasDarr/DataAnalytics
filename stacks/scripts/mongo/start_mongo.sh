@@ -1,0 +1,1 @@
+sudo docker-compose -f scripts/mongo/mongo-compose.yml  up --build

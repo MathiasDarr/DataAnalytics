@@ -1,0 +1,11 @@
+{
+  "name": "es-trips2",
+  "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "topics": "db.snowpack.trip_reports",
+    "connection.url": "http://elasticsearch7:9200",
+    "type.name": "_doc",
+    "key.ignore": "true",
+    "schema.ignore": "true"
+  }
+}

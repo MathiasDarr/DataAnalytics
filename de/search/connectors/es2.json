@@ -1,0 +1,26 @@
+{
+  "name": "es2",
+  "config": {
+            "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+            "connection.url": "http://elasticsearch7:9200",
+            "type.name": "_doc",
+            "topics": "estopic",
+            "key.ignore": "true",
+            "schema.ignore": "true"
+            }
+}
+
+
+
+curl -X PUT localhost:8083/connectors/simple-elasticsearch-connector/config -H "Content-Type: application/json" -d ‘{
+ "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+ "connection.url": "http://elasticsearch:9200",
+ "tasks.max": "1",
+ "topics": "simple.elasticsearch.data",
+ "name": "simple-elasticsearch-connector",
+ "type.name": "_doc",
+ "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+ "value.converter.schemas.enable": "false",
+ "schema.ignore": "true",
+ "key.ignore": "true"
+}’

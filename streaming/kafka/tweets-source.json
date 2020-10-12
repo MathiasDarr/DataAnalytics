@@ -1,0 +1,11 @@
+{
+  "name": "tweets",
+  "config": {
+    "connector.class": "FileStreamSource",
+    "tasks.max": "1",
+    "file": "test_tweets.txt",
+    "topics": "kafka-tweets",
+    "name": "kafka-tweets"
+  },
+  "tasks": []
+}

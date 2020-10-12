@@ -1,0 +1,146 @@
+version: '2'
+services:
+  postgres:
+    image: debezium/example-postgres:${DEBEZIUM_VERSION}
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=snowpackDB
+    container_name: db
+  zookeeper:
+    image: debezium/zookeeper:${DEBEZIUM_VERSION}
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+    container_name: zookeeper
+  kafka:
+    image: debezium/kafka:${DEBEZIUM_VERSION}
+    ports:
+      - 9092:9092
+    links:
+      - zookeeper
+    environment:
+      - ZOOKEEPER_CONNECT=zookeeper:2181
+    container_name: kafka
+#
+  schema-registry:
+    image: confluentinc/cp-schema-registry
+    ports:
+      - 8181:8181
+      - 8081:8081
+    environment:
+      - SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL=zookeeper:2181
+      - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+      - SCHEMA_REGISTRY_LISTENERS=http://schema-registry:8081
+    container_name: schema-registry
+    links:
+      - zookeeper
+      - kafka
+#  connect:
+#    image: debezium/connect:${DEBEZIUM_VERSION}
+#    ports:
+#      - 8083:8083
+#    links:
+#      - kafka
+#      - postgres
+#      - schema-registry
+#    container_name: connect
+#    environment:
+#      - BOOTSTRAP_SERVERS=kafka:9092
+#      - GROUP_ID=1
+#      - CONFIG_STORAGE_TOPIC=my_connect_configs
+#      - OFFSET_STORAGE_TOPIC=my_connect_offsets
+#      - STATUS_STORAGE_TOPIC=my_connect_statuses
+#      - KEY_CONVERTER=io.confluent.connect.avro.AvroConverter
+#      - VALUE_CONVERTER=io.confluent.connect.avro.AvroConverter
+#      - INTERNAL_KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+#      - INTERNAL_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+#      - CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL=http://schema-registry:8081
+#      - CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL=http://schema-registry:8081
+#    volumes:
+#    - /${PWD}/confluentinc-kafka-connect-elasticsearch-5.4.1:/kafka/connect/confluentinc-kafka-connect-elasticsearch-5.4.1
+#
+#
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.5
+#    hostname: elasticsearch
+#    container_name: elasticsearch
+#    depends_on:
+#      - connect
+#    ports:
+#      - "9200:9200"
+#      - "9300:9300"
+#    environment:
+#      xpack.security.enabled: "false"
+#      XPACK_SECURITY_ENABLED: "false"
+#      xpack.monitoring.enabled: "false"
+
+
+  connect:
+    image: confluentinc/cp-kafka-connect:5.4.0-beta1
+    container_name: connect
+    depends_on:
+      - zookeeper
+      - kafka
+      - schema-registry
+    ports:
+      - 8083:8083
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: "kafka:9092"
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: kafka-connect-540
+      CONNECT_CONFIG_STORAGE_TOPIC: _kafka-connect-540-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: _kafka-connect-540-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: _kafka-connect-540-status
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect-01"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
+      CONNECT_LOG4J_APPENDER_STDOUT_LAYOUT_CONVERSIONPATTERN: "[%d] %p %X{connector.context}%m (%c:%L)%n"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_PLUGIN_PATH: /usr/share/java,/usr/share/confluent-hub-components
+
+  elasticsearch7:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    container_name: elasticsearch7
+    ports:
+      - 29200:9200
+    environment:
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+      discovery.type: "single-node"
+
+
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:5.5.2
+#    #image: kibana:5.5.2
+#    hostname: kibana
+#    container_name: kibana
+#    depends_on:
+#      - elasticsearch7
+#    ports:
+#      - "5601:5601"
+#    environment:
+#      xpack.security.enabled: "false"
+#      XPACK_SECURITY_ENABLED: "false"
+#      xpack.monitoring.enabled: "false"
+#      discovery.type: "single-node"
+#      elasticsearch.url: http://elasticsearch:9200
+#      server.host: "0.0.0.0"
+#      SERVER_HOST: "0.0.0.0"
+#      server.name: "kibana"
+#      SERVER_NAME: "kibana"
+#      XPACK_GRAPH_ENABLED: "false"
+#      XPACK_MONITORING_ENABLED: "false"
+#      XPACK_REPORTING_ENABLED: "false"
+#    command: [ "/bin/bash", "-c", "/usr/share/kibana/bin/kibana-plugin remove x-pack; /usr/local/bin/kibana-docker" ]
