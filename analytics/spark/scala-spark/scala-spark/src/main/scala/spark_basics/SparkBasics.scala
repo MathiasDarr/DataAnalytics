@@ -1,9 +1,8 @@
-package basics
+package spark_basics
 
 import org.apache.spark.{SparkConf, SparkContext}
 
-object WordCount {
-
+object SparkBasics {
   def getSparkContext() = {
 
     val conf = new SparkConf().
