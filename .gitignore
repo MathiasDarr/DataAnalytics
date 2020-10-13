@@ -9,6 +9,7 @@ dist/
 
 data/
 
+stacks/hive/presto.jar
 
 # Compiled Java class files
 *.class

@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'dakobed-serverless-pipeline
+
+  Sample SAM Template for dakobed-serverless-pipeline
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+Resources:
+  KinesisProcesserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://dakobed-serverless-pipeline/4282d3ebc87137512f653d01181021e9
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Events:
+        KinesisHandler:
+          Type: Kinesis
+          Properties:
+            BatchSize: 100
+            Stream: arn:aws:kinesis:us-west-2:710339184759:stream/DakobedStream
+            StartingPosition: TRIM_HORIZON
