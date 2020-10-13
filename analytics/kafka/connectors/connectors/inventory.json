@@ -1,0 +1,12 @@
+{
+  "name": "jdbc-source",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max": "1",
+    "connection.url": "localhost:5432/customersDB?user=&password=postgres&ssl=true\"",
+    "mode": "incrementing",
+    "incrementing.column.name": "id",
+    "topic.prefix": "test-sqlite-jdbc-",
+    "name": "jdbc-source"
+  }
+}
